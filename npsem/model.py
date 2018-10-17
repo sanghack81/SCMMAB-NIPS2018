@@ -106,10 +106,9 @@ class CausalDiagram:
             directed_edges = list(directed_edges)
             bidirected_edges = list(bidirected_edges)
             self.V = frozenset(vs) | fzset_union(directed_edges) | fzset_union((x, y) for x, y, _ in bidirected_edges)
-            # self.U = frozenset({u for _, _, u in bidirected_edges})
             self.U = frozenset(u for _, _, u in bidirected_edges)
             self.confounded_dict = {u: frozenset({x, y}) for x, y, u in
-                                    bidirected_edges}  # dictionary for unobserved variables, stores 2 endogenous children as frozenset for each unobserved variable.
+                                    bidirected_edges}
 
             self._ch = pairs2dict(directed_edges)
             self._pa = pairs2dict(directed_edges, backward=True)
@@ -120,12 +119,11 @@ class CausalDiagram:
         self.edges = tuple((x, y) for x, ys in self._ch.items() for y in ys)
         self.causal_order = functools.lru_cache()(self.causal_order)
         self._do_ = functools.lru_cache()(self._do_)
-        self.__cc = None  # TODO can be faster to copy from original graph and update only affected.
-        self.__cc_dict = None  # TODO can be faster to copy from original graph and update only affected.
+        self.__cc = None
+        self.__cc_dict = None
         self.__h = None
         self.__characteristic = None
         self.__confoundeds = None
-        # TODO faster when copied
         self.u_pas = defaultdict(set)
         for u, xy in self.confounded_dict.items():
             for v in xy:
@@ -229,7 +227,7 @@ class CausalDiagram:
         return y in self._ch[x]
 
     def is_confounded(self, x, y) -> bool:
-        return {x, y} in self.confounded_dict.values()  # is it fast enough
+        return {x, y} in self.confounded_dict.values()
 
     def u_of(self, x, y):
         key = {x, y}
@@ -238,11 +236,9 @@ class CausalDiagram:
                 return u
         return None
 
-    # TODO renmae
     def confounded_with(self, u):
         return self.confounded_dict[u]
 
-    # TODO better cache, rename
     def confounded_withs(self, v):
         return {next(iter(xy - {v})) for xy in self.confounded_dict.values() if v in xy}
 
@@ -272,7 +268,6 @@ class CausalDiagram:
         return CausalDiagram(self.V, set(self.edges) - dir_edges, self.confounded_to_3tuples() - bidir_edges)
 
     def __sub__(self, v_or_vs_or_edges) -> 'CausalDiagram':
-        # TODO remove U
         if not v_or_vs_or_edges:
             return self
         if isinstance(v_or_vs_or_edges, str):
@@ -280,7 +275,6 @@ class CausalDiagram:
         v_or_vs_or_edges = list(v_or_vs_or_edges)
         if isinstance(v_or_vs_or_edges[0], str):
             return self[self.V - wrap(v_or_vs_or_edges)]
-        # assert set(v_or_vs_or_edges) <= set(self.edges)
         return self.edges_removed(v_or_vs_or_edges)
 
     def causal_order(self, backward=False) -> Tuple:
@@ -315,7 +309,6 @@ class CausalDiagram:
                 if v not in self.__confoundeds:
                     self.__confoundeds[v] = frozenset()
 
-    # TODO faster
     def __ensure_cc_cached(self):
         if self.__cc is None:
             self.__ensure_confoundeds_cached()
@@ -363,27 +356,10 @@ class CausalDiagram:
             return False
         return True
 
-    def underbar(self, v_or_vs):
-        return self - {(v, chv) for v in wrap(v_or_vs) for chv in self.ch(v)}
-
     def __hash__(self):
         if self.__h is None:
             self.__h = hash(sortup(self.V)) ^ hash(sortup(self.edges)) ^ hash(sortup2(self.confounded_dict.values()))
         return self.__h
-
-    def root_set(self):
-        return {v for v in self.V if not self.ch(v)}
-
-    def renamed(self, v2v: Dict[str, str]):
-        def rename(v):
-            if v in v2v:
-                return v2v[v]
-            else:
-                return v
-
-        return CausalDiagram({rename(v) for v in sorted(self.V)},
-                             {(rename(x), rename(y)) for x, y in self.edges},
-                             {(rename(x), rename(y), rename(u)) for x, y, u in self.confounded_to_3tuples()})
 
     def __repr__(self):
         return cd2qcd(self)
@@ -441,7 +417,6 @@ class CausalDiagram:
         # e -> d -> c
         # == a->b->c<-d<-e
         paths_string = [' ⟶ '.join(path) for path in paths]
-        # TODO simplify
         bipaths_string = [' ⟷ '.join(path) for path in bipaths]
         alone = self.V - {x for path in paths for x in path} - {x for path in bipaths for x in path}
         if alone:
@@ -449,24 +424,14 @@ class CausalDiagram:
         else:
             return f'[' + (', '.join(paths_string) + ' / ' + ', '.join(bipaths_string)) + ']'
 
-    def to_nx(self):
-        nxdg = nx.DiGraph()
-        nxdg.add_nodes_from(self.V)
-        nxdg.add_nodes_from(self.U)
-        two_edges = [[(u, x), (u, y)] for x, y, u in self.confounded_to_3tuples()]
-        nxdg.add_edges_from(itertools.chain(*two_edges))
-        nxdg.add_edges_from(self.edges)
-        return nxdg
-
 
 class StructuralCausalModel:
     def __init__(self, G: CausalDiagram, F=None, P_U=None, D=None, more_U=None):
-        # TODO support alias
         self.G = G
         self.F = F
         self.P_U = P_U
-        self.D = with_default(D, defaultdict(lambda: (0, 1)))  # default binary behavior
-        self.more_U = set() if more_U is None else set(more_U)  # to cover unobserved variables that are not explicit in causal graph
+        self.D = with_default(D, defaultdict(lambda: (0, 1)))
+        self.more_U = set() if more_U is None else set(more_U)
 
         self.query00 = functools.lru_cache(1024)(self.query00)
 
@@ -475,10 +440,8 @@ class StructuralCausalModel:
             condition = dict()
         if intervention is None:
             intervention = dict()
-        # new_outcome = tuple(sorted(outcome))
         new_condition = tuple(sorted([(x, y) for x, y in condition.items()]))
         new_intervention = tuple(sorted([(x, y) for x, y in intervention.items()]))
-        # TODO reordered outcome, and reorder
         return self.query00(outcome, new_condition, new_intervention, verbose)
 
     def query00(self, outcome: Tuple, condition: Tuple, intervention: Tuple, verbose=False) -> defaultdict:

@@ -26,7 +26,6 @@ def KL(mu_x, mu_star, epsilon=1e-12):
 
 def sup_KL(mu_ref, divergence, lower=None):
     """ Find largest mu that satisfies KL(mu_ref, mu) <= divergence """
-    # assert 0 <= divergence
     if divergence <= 0:
         return mu_ref
     if KL(mu_ref, 1.0) <= divergence:
@@ -37,27 +36,22 @@ def sup_KL(mu_ref, divergence, lower=None):
 class U_keeper:
     """  Keep look-ahead U values to save unnecessary computation (more effective if there is a large number of arms) """
 
-    def __init__(self, K_: int, T: int, true_mu=None):
-        self.true_mu = true_mu
-        self.mu_star = np.max(true_mu) if true_mu is not None else None
-        self.K_ = K_  # number of arms
-        self.T = T  # horizon
-        self.lookahead_U = None  # U computed at ahead of time, valid if not pulled
-        self.lookahead_t = None  # time associated with the lookahead_U
-        self.step_sizes = None  # time associated with the lookahead_U
+    def __init__(self, K_: int, T: int):
+        self.K_ = K_
+        self.T = T
+        self.lookahead_U = None
+        self.lookahead_t = None
+        self.step_sizes = None
 
     def update_U(self, t, f, mu_hat, N, U, arm_x):
         init_step_size = self.K_ * 2
         T = self.T
         K_ = self.K_
-        # at an early stage
         if t <= 5 * K_:
             fval = f(t)
-            # compute every time
             for i in range(K_):
                 U[i] = sup_KL(mu_hat[i], fval / N[i])
             if t == 5 * K_:
-                # initialize lookahead U
                 ahead_t = min(t + init_step_size, T)
                 ft2 = f(ahead_t)
                 self.lookahead_U = np.array([sup_KL(mu_hat[i], ft2 / N[i]) for i in range(K_)])
@@ -70,14 +64,9 @@ class U_keeper:
                 if arm != arm_x:
                     U[arm] = sup_KL(mu_hat[arm], fval / N[arm])
 
-            if self.true_mu is None:
-                for arm in set(np.where(self.lookahead_t == t)[0]) | {arm_x}:
-                    self.lookahead_t[arm] = ahead_t = t + init_step_size
-                    self.lookahead_U[arm] = sup_KL(mu_hat[arm], f(ahead_t) / N[arm])
-            else:
-                for arm in set(np.where(self.lookahead_t == t)[0]) | {arm_x}:  # TODO improve
-                    self.lookahead_t[arm] = ahead_t = t + init_step_size
-                    self.lookahead_U[arm] = sup_KL(mu_hat[arm], f(ahead_t) / N[arm])
+            for arm in set(np.where(self.lookahead_t == t)[0]) | {arm_x}:
+                self.lookahead_t[arm] = ahead_t = t + init_step_size
+                self.lookahead_U[arm] = sup_KL(mu_hat[arm], f(ahead_t) / N[arm])
 
 
 def default_kl_UCB_func(t, value_at_small_t=1):
@@ -141,7 +130,7 @@ def kl_UCB(T: int, mu, f=None, seed=None, faster=True, prior_SF=None, **_kwargs)
 
 
 def thompson_sampling(T: int, mu, seed=None, prior_SF=None, **_kwargs):
-    """ Bounded Bernoulli Thompson Sampling with known mu"""
+    """ Bernoulli Thompson Sampling with known mu"""
     K_ = len(mu)
     S, F, theta = np.zeros((K_,)), np.zeros((K_,)), np.zeros((K_,))
     if prior_SF is not None:

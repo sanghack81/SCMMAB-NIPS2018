@@ -96,12 +96,10 @@ def fzset_union(sets) -> FrozenSet:
 
 
 def sortup(xs: Iterable[T]) -> Tuple[T, ...]:
-    # sorted tuple
     return tuple(sorted(xs))
 
 
 def sortup2(xxs):
-    # sorted tuple
     return sortup([sortup(xs) for xs in xxs])
 
 

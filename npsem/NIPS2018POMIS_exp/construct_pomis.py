@@ -27,10 +27,7 @@ def V_Q_i(v, Q, i):
         return (int(v[Q]) >> (2 * i)) % 4
 
 
-def construct_SCM_for_POMIS_empty_W(G: CausalDiagram, Y, T: AbstractSet, X: AbstractSet, W: AbstractSet, jitter=0, verbose=False) -> StructuralCausalModel:
-    assert jitter == 0, "jitter not supported yet"
-    assert not W, "intervened not supported yet"
-
+def construct_SCM_for_POMIS_empty_W(G: CausalDiagram, Y, T: AbstractSet, X: AbstractSet, verbose=False) -> StructuralCausalModel:
     G = G[T | X]
 
     U_over_MUCT = sorted(G[T].U)
@@ -181,5 +178,4 @@ def construct_SCM_for_POMIS_empty_W(G: CausalDiagram, Y, T: AbstractSet, X: Abst
             F[V_i] = func000
 
     D = {u_i: (0, 1) for u_i in G.U}
-    # print(list(F.keys()))
     return StructuralCausalModel(G, F, P_U, D)

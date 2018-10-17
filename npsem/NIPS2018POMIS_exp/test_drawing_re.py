@@ -4,16 +4,15 @@ import numpy as np
 import seaborn as sns
 from matplotlib.axes import Axes
 
-# Without this, fonts in a saved figure will be Type 3 Arial.
 from npsem.NIPS2018POMIS_exp.test_bandit_strategies import load_result, compute_cumulative_regret, compute_optimality
 from npsem.utils import with_default
 from npsem.viz_util import sparse_index
 
 mpl.rc('text', usetex=True)
 mpl.rcParams['text.latex.preamble'] = [
-    r'\usepackage{helvet}',  # helvetica font
-    r'\usepackage{sansmath}',  # math-font matching  helvetica
-    r'\sansmath'  # actually tell tex to use it!
+    r'\usepackage{helvet}',
+    r'\usepackage{sansmath}',
+    r'\sansmath'
 ]
 
 c__ = sns.color_palette('Set1', 4)
@@ -23,12 +22,7 @@ COLORS = [c__[0], c__[0], c__[1], c__[1], c__[2], c__[2], c__[3], c__[3]]
 def naked_MAB_regret_plot(axes: Axes, xs_dict, cut_time, band_alpha=0.1, legend=False, hide_ylabel=False, adjust_ymax=1, hide_yticklabels=False, **_kwargs):
     for i, (name, value_matrix) in list(enumerate(xs_dict.items())):
         mean_x = np.mean(value_matrix, axis=0)
-        # previously standard deviation
-        # sd_x = np.std(value_matrix, axis=0)
-        # lower, upper = mean_x - sd_x, mean_x + sd_x
-
-        # sd_x = 1.96 * np.std(value_matrix, axis=0) / np.sqrt(len(value_matrix)) # confidence interval
-        sd_x = np.std(value_matrix, axis=0)  # standard deviation
+        sd_x = np.std(value_matrix, axis=0)
         lower, upper = mean_x - sd_x, mean_x + sd_x
 
         time_points = sparse_index(with_default(cut_time, len(mean_x)), 200)
@@ -99,17 +93,15 @@ def aggregate_plot():
             plot_funcs[plot_type](current_axes, results[task_name][plot_type], info[task_name]['cut_time'],
                                   legend=row_id == 1 and col_id == 0,
                                   hide_ylabel=col_id != 0,
-                                  # hide_yticklabels=col_id != 0,
                                   hide_yticklabels=False,
                                   adjust_ymax={'Markovian': 1, 'IV': 0.35, 'XYZWST': 0.55}[task_name] if plot_type == 'CR' else 1)
 
     sns.despine(fig)
     fig.tight_layout()
-    fig.subplots_adjust(wspace=0.2, hspace=0.175)  # 0.2, 0.15 was okay
+    fig.subplots_adjust(wspace=0.2, hspace=0.175)
     fig.savefig('aggregate.pdf', bbox_inches='tight', pad_inches=0.02)
 
 
 if __name__ == '__main__':
-    # please specify directory where "bandit_results" directory exists
     absolute_path = ''
     aggregate_plot()

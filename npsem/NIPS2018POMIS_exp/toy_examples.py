@@ -10,11 +10,11 @@ from npsem.viz_util import sparse_index
 
 rc('text', usetex=True)
 pl.rcParams['text.latex.preamble'] = [
-    r'\usepackage{tgheros}',  # helvetica font
-    r'\usepackage{sansmath}',  # math-font matching  helvetica
-    r'\sansmath'  # actually tell tex to use it!
-    r'\usepackage{siunitx}',  # micro symbols
-    r'\sisetup{detect-all}',  # force siunitx to use the fonts
+    r'\usepackage{tgheros}',
+    r'\usepackage{sansmath}',
+    r'\sansmath'
+    r'\usepackage{siunitx}',
+    r'\sisetup{detect-all}',
 ]
 
 

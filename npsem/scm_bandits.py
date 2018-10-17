@@ -12,7 +12,7 @@ def SCM_to_bandit_machine(M: StructuralCausalModel, Y='Y') -> Tuple[Tuple, Dict[
     mu_arm = list()
     arm_setting = dict()
     arm_id = 0
-    all_subsets = list(combinations(sorted(G.V - {Y})))  # important to use sorted
+    all_subsets = list(combinations(sorted(G.V - {Y})))
     for subset in all_subsets:
         for values in product(*[M.D[variable] for variable in subset]):
             arm_setting[arm_id] = dict(zip(subset, values))

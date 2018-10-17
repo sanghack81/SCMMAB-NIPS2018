@@ -11,7 +11,6 @@ from npsem.utils import subseq, mkdirs
 
 
 def main_experiment(M: StructuralCausalModel, Y='Y', num_trial=200, horizon=10000, n_jobs=1):
-    # run bandit algorithms
     results = dict()
     mu, arm_setting = SCM_to_bandit_machine(M)
     for arm_strategy in arm_types():
@@ -86,7 +85,6 @@ def finished(directory, flag=None, message=''):
 
 
 def main():
-    """ Conduct experiments and draw figures. If experiments are already done, draw graphs again."""
     num_simulation_repeats = 300
     for dirname, (model, p_u), horizon in [('xyzwst', XYZWST_SCM(True, seed=0), 10000),
                                            ('mark', simple_markovian_SCM(seed=0), 10000),
