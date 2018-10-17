@@ -3,8 +3,8 @@
 Sanghack Lee and Elias Bareinboim Structural Causal Bandits: Where to Intervene? In _Advances in Neural Information Processing System 31_, _forthcoming_  2018
 
 We provide codebase to allow readers to reproduce our experiments. This code also contains various utilities related to causal diagram, structural causal model, and multi-armed bandit problem.
-(At this moment, the code is not well-documented) 
-The code is tested with the following configuration: `python=3.7` `numpy=1.15.2`, `scipy=1.1.0`, `joblib=0.12.5`, `matplotlib=3.0.0`, `seaborn=0.9.0`, and `networkx=2.2`, on
+(At this moment, the code is not well-documented.) 
+The code is tested with the following configuration: `python=3.7`, `numpy=1.15.2`, `scipy=1.1.0`, `joblib=0.12.5`, `matplotlib=3.0.0`, `seaborn=0.9.0`, and `networkx=2.2`, on
 Linux and MacOS machines.
 
 
