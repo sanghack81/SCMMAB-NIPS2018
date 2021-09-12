@@ -9,11 +9,7 @@ from npsem.utils import with_default
 from npsem.viz_util import sparse_index
 
 mpl.rc('text', usetex=True)
-mpl.rcParams['text.latex.preamble'] = [
-    r'\usepackage{helvet}',
-    r'\usepackage{sansmath}',
-    r'\sansmath'
-]
+mpl.rcParams['text.latex.preamble'] = r"\usepackage{helvet}\usepackage{sansmath}\sansmath"
 
 c__ = sns.color_palette('Set1', 4)
 COLORS = [c__[0], c__[0], c__[1], c__[1], c__[2], c__[2], c__[3], c__[3]]
