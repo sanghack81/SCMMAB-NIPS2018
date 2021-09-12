@@ -49,13 +49,13 @@ def load_result(directory):
     results = dict()
     for arm_strategy in arm_types():
         for bandit_algo in ['TS', 'UCB']:
-            loaded = np.load(directory + f'/{arm_strategy}---{bandit_algo}.npz')
+            loaded = np.load(directory + f'/{arm_strategy}---{bandit_algo}.npz', allow_pickle=True)
             arms = loaded['a']
             rewards = loaded['b']
             results[(arm_strategy, bandit_algo)] = (arms, rewards)
 
-    p_u = np.load(directory + '/p_u.npz')['a'][()]
-    mu = tuple(np.load(directory + '/mu.npz')['a'])
+    p_u = np.load(directory + '/p_u.npz', allow_pickle=True)['a'][()]
+    mu = tuple(np.load(directory + '/mu.npz', allow_pickle=True)['a'])
     return p_u, mu, results
 
 
