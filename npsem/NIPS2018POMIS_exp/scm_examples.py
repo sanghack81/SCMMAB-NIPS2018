@@ -159,3 +159,13 @@ def simple_markovian_SCM(seed=None) -> [StructuralCausalModel, dict]:
                                   D=domains,
                                   more_U={'U_' + v for v in G.V})
         return M, mu1
+
+
+if __name__ == '__main__':
+    scm, mu = IV_SCM(True, seed=0)
+    # query(self, outcome: Tuple, condition: dict = None, intervention: dict = None, verbose=False) -> defaultdict:
+    print(scm.query(('Y',), intervention={'X': 0}))
+    print(scm.query(('Y',), intervention={'X': 1}))
+    print(scm.query(('Y',), intervention={'Z': 0}))
+    print(scm.query(('Y',), intervention={'Z': 1}))
+    print(mu)

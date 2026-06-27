@@ -1,4 +1,3 @@
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -6,10 +5,9 @@ from matplotlib.axes import Axes
 
 from npsem.NIPS2018POMIS_exp.test_bandit_strategies import load_result, compute_cumulative_regret, compute_optimality
 from npsem.utils import with_default
-from npsem.viz_util import sparse_index
+from npsem.viz_util import sparse_index, enable_usetex
 
-mpl.rc('text', usetex=True)
-mpl.rcParams['text.latex.preamble'] = r"\usepackage{helvet}\usepackage{sansmath}\sansmath"
+enable_usetex(r"\usepackage{helvet}\usepackage{sansmath}\sansmath")
 
 c__ = sns.color_palette('Set1', 4)
 COLORS = [c__[0], c__[0], c__[1], c__[1], c__[2], c__[2], c__[3], c__[3]]

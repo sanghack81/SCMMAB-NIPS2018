@@ -1,28 +1,19 @@
-import matplotlib.pylab as pl
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from matplotlib import rc
 
 from npsem.NIPS2018POMIS_exp.test_bandit_strategies import load_result, compute_cumulative_regret, compute_optimality, compute_arm_frequencies
 from npsem.utils import with_default, mkdirs
-from npsem.viz_util import sparse_index
+from npsem.viz_util import sparse_index, enable_usetex
 
-rc('text', usetex=True)
-pl.rcParams['text.latex.preamble'] = [
-    r'\usepackage{tgheros}',
-    r'\usepackage{sansmath}',
-    r'\sansmath'
-    r'\usepackage{siunitx}',
-    r'\sisetup{detect-all}',
-]
+enable_usetex(r'\usepackage{tgheros}\usepackage{sansmath}\sansmath\usepackage{siunitx}\sisetup{detect-all}')
 
 
 def MAB_optimal_probability_plot2(fname, arm_freqs, colors=None, title=None, fig_kwargs=None, cut_time=None, name_filter=None, name_change=None, no_legend=False):
     """ Draw figures showing optimal arm selection probability (based on multiple runs) """
     if colors is None:
         colors = sns.color_palette('Set1', len(arm_freqs))
-    sns.set(style="white", font_scale=1.4, rc={"lines.linewidth": 20})
+    sns.set_theme(style="white", font_scale=1.4, rc={"lines.linewidth": 20})
     plt.figure(**with_default(fig_kwargs, dict()))
     for i, (name, arm_freq) in enumerate(arm_freqs.items()):
         if name_filter is not None:
@@ -38,9 +29,9 @@ def MAB_optimal_probability_plot2(fname, arm_freqs, colors=None, title=None, fig
     plt.ylim(-0.05, 1.02)
     if title is not None:
         plt.title(title)
-    for l in plt.gca().lines:
-        print(l.get_linewidth())
-        plt.setp(l, linewidth=2)
+    for line in plt.gca().lines:
+        print(line.get_linewidth())
+        plt.setp(line, linewidth=2)
     for line in plt.gca().legend().get_lines():
         line.set_linewidth(2)
     sns.despine()
@@ -51,7 +42,7 @@ def MAB_optimal_probability_plot2(fname, arm_freqs, colors=None, title=None, fig
 def MAB_regret_plot2(fname, xs_dict, colors=None, title=None, fig_kwargs=None, cut_time=None, name_filter=None, name_change=None):
     if colors is None:
         colors = sns.color_palette('Set1', len(xs_dict))
-    sns.set(style="white", font_scale=1.4, rc={"lines.linewidth": 20})
+    sns.set_theme(style="white", font_scale=1.4, rc={"lines.linewidth": 20})
     plt.figure(**with_default(fig_kwargs, dict()))
 
     for i, (name, value_matrix) in enumerate(xs_dict.items()):
@@ -70,9 +61,9 @@ def MAB_regret_plot2(fname, xs_dict, colors=None, title=None, fig_kwargs=None, c
     plt.ylim([-5, 100])
     if title is not None:
         plt.title(title)
-    for l in plt.gca().lines:
-        print(l.get_linewidth())
-        plt.setp(l, linewidth=2)
+    for line in plt.gca().lines:
+        print(line.get_linewidth())
+        plt.setp(line, linewidth=2)
 
     sns.despine()
     plt.savefig(fname, bbox_inches='tight', pad_inches=0.02)
