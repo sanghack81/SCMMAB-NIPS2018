@@ -1,13 +1,13 @@
 from itertools import product
 
-from typing import Dict, Tuple, Union, Any
+from typing import Any
 
 from npsem.model import StructuralCausalModel
 from npsem.utils import combinations
 from npsem.where_do import POMISs, MISs
 
 
-def SCM_to_bandit_machine(M: StructuralCausalModel, Y='Y') -> Tuple[Tuple, Dict[Union[int, Any], Dict]]:
+def SCM_to_bandit_machine(M: StructuralCausalModel, Y='Y') -> tuple[tuple, dict[int | Any, dict]]:
     G = M.G
     mu_arm = list()
     arm_setting = dict()
@@ -29,7 +29,7 @@ def arm_types():
     return ['POMIS', 'MIS', 'Brute-force', 'All-at-once']
 
 
-def arms_of(arm_type: str, arm_setting, G, Y) -> Tuple[int, ...]:
+def arms_of(arm_type: str, arm_setting, G, Y) -> tuple[int, ...]:
     if arm_type == 'POMIS':
         return pomis_arms_of(arm_setting, G, Y)
     elif arm_type == 'All-at-once':

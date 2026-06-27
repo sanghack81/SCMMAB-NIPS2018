@@ -3,7 +3,8 @@ from itertools import combinations as itercomb, chain
 import numpy as np
 import os
 from contextlib import contextmanager
-from typing import Iterable, TypeVar, Generator, Tuple, Set, List, FrozenSet, AbstractSet
+from typing import TypeVar, AbstractSet
+from collections.abc import Iterable, Generator
 
 T = TypeVar('T')
 
@@ -35,7 +36,7 @@ def pick_randomly(xs):
 
 def rand_argmax(xs):
     max_val = np.nanmax(xs)
-    if max_val is np.nan:
+    if np.isnan(max_val):
         return pick_randomly(np.arange(len(xs)))
 
     max_indices = np.where(xs == max_val)[0]
@@ -52,7 +53,7 @@ def with_default(x, dflt=None):
     return x if x is not None else dflt
 
 
-def disjoint(set1: Set, set2: Set) -> bool:
+def disjoint(set1: set, set2: set) -> bool:
     if len(set2) < len(set1):
         set1, set2 = set2, set1
     return not any(x in set2 for x in set1)
@@ -79,23 +80,23 @@ def seeded(seed=None):
         yield
 
 
-def only(W: List[T], Z: AbstractSet[T]) -> List[T]:
+def only(W: list[T], Z: AbstractSet[T]) -> list[T]:
     if not Z:
         return []
     return [w for w in W if w in Z]
 
 
-def pop(xs: Set):
+def pop(xs: set):
     x = next(iter(xs))
     xs.remove(x)
     return x
 
 
-def fzset_union(sets) -> FrozenSet:
+def fzset_union(sets) -> frozenset:
     return frozenset(chain(*sets))
 
 
-def sortup(xs: Iterable[T]) -> Tuple[T, ...]:
+def sortup(xs: Iterable[T]) -> tuple[T, ...]:
     return tuple(sorted(xs))
 
 
@@ -103,13 +104,13 @@ def sortup2(xxs):
     return sortup([sortup(xs) for xs in xxs])
 
 
-def shuffled(xs: Iterable[T]) -> List[T]:
+def shuffled(xs: Iterable[T]) -> list[T]:
     xs = list(xs)
     np.random.shuffle(xs)
     return xs
 
 
-def combinations(xs: Iterable[T]) -> Generator[Tuple[T, ...], None, None]:
+def combinations(xs: Iterable[T]) -> Generator[tuple[T, ...], None, None]:
     """ all combinations of given in the order of increasing its size """
     xs = list(xs)
     for i in range(len(xs) + 1):

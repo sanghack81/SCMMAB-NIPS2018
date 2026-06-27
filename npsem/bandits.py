@@ -1,8 +1,7 @@
 import numpy as np
 from joblib import Parallel, delayed
-from numpy.random.mtrand import beta
+from numpy.random import beta
 from scipy.optimize import brenth
-from typing import Tuple
 
 from npsem.utils import seeded, rand_argmax, with_default
 
@@ -132,7 +131,7 @@ def kl_UCB(T: int, mu, f=None, seed=None, faster=True, prior_SF=None, **_kwargs)
 def thompson_sampling(T: int, mu, seed=None, prior_SF=None, **_kwargs):
     """ Bernoulli Thompson Sampling with known mu"""
     K_ = len(mu)
-    S, F, theta = np.zeros((K_,)), np.zeros((K_,)), np.zeros((K_,))
+    S, F = np.zeros((K_,)), np.zeros((K_,))
     if prior_SF is not None:
         S, F = prior_SF
 
@@ -157,7 +156,7 @@ def thompson_sampling(T: int, mu, seed=None, prior_SF=None, **_kwargs):
     return arms_selected, rewards
 
 
-def play_bandits(T: int, mu, algo: str, repeat: int, n_jobs=1) -> Tuple[np.ndarray, np.ndarray]:
+def play_bandits(T: int, mu, algo: str, repeat: int, n_jobs=1) -> tuple[np.ndarray, np.ndarray]:
     if algo == 'TS':
         par_result = Parallel(n_jobs=n_jobs, verbose=100)(delayed(thompson_sampling)(T, mu, seed=trial) for trial in range(repeat))
     elif algo == 'UCB':

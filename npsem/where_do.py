@@ -1,4 +1,4 @@
-from typing import Set, List, Tuple, FrozenSet, AbstractSet
+from typing import AbstractSet
 
 from npsem.model import CausalDiagram
 from npsem.utils import pop, only, combinations
@@ -9,7 +9,7 @@ def CC(G: CausalDiagram, X: str):
     return G.c_component(X)
 
 
-def MISs(G: CausalDiagram, Y: str) -> FrozenSet[FrozenSet[str]]:
+def MISs(G: CausalDiagram, Y: str) -> frozenset[frozenset[str]]:
     """ All minimal intervention sets """
     II = G.V - {Y}
     assert II <= G.V
@@ -21,7 +21,7 @@ def MISs(G: CausalDiagram, Y: str) -> FrozenSet[FrozenSet[str]]:
     return subMISs(G, Y, frozenset(), Ws)
 
 
-def subMISs(G: CausalDiagram, Y: str, Xs: FrozenSet[str], Ws: List[str]) -> FrozenSet[FrozenSet[str]]:
+def subMISs(G: CausalDiagram, Y: str, Xs: frozenset[str], Ws: list[str]) -> frozenset[frozenset[str]]:
     """ subroutine for MISs -- this creates a recursive call tree with n, n-1, n-2, ... widths """
     out = frozenset({Xs})
     for i, W_i in enumerate(Ws):
@@ -31,13 +31,13 @@ def subMISs(G: CausalDiagram, Y: str, Xs: FrozenSet[str], Ws: List[str]) -> Froz
     return out
 
 
-def bruteforce_POMISs(G: CausalDiagram, Y: str) -> FrozenSet[FrozenSet[str]]:
+def bruteforce_POMISs(G: CausalDiagram, Y: str) -> frozenset[frozenset[str]]:
     """ This computes a complete set of POMISs in a brute-force way """
     return frozenset({frozenset(IB(G.do(Ws), Y))
                       for Ws in combinations(list(G.V - {Y}))})
 
 
-def MUCT(G: CausalDiagram, Y: str) -> FrozenSet[str]:
+def MUCT(G: CausalDiagram, Y: str) -> frozenset[str]:
     """ Minimal Unobserved Confounder's Territory """
     H = G[G.An(Y)]
 
@@ -52,18 +52,18 @@ def MUCT(G: CausalDiagram, Y: str) -> FrozenSet[str]:
     return Ts
 
 
-def IB(G: CausalDiagram, Y: str) -> FrozenSet[str]:
+def IB(G: CausalDiagram, Y: str) -> frozenset[str]:
     """ Interventional Border """
     Zs = MUCT(G, Y)
     return G.pa(Zs) - Zs
 
 
-def MUCT_IB(G: CausalDiagram, Y) -> Tuple[FrozenSet[str], FrozenSet[str]]:
+def MUCT_IB(G: CausalDiagram, Y) -> tuple[frozenset[str], frozenset[str]]:
     Zs = MUCT(G, Y)
     return Zs, G.pa(Zs) - Zs
 
 
-def POMISs(G: CausalDiagram, Y: str) -> Set[FrozenSet[str]]:
+def POMISs(G: CausalDiagram, Y: str) -> set[frozenset[str]]:
     """ all POMISs for G with respect to Y """
     G = G[G.An(Y)]
 
@@ -72,7 +72,7 @@ def POMISs(G: CausalDiagram, Y: str) -> Set[FrozenSet[str]]:
     return subPOMISs(H, Y, only(H.causal_order(backward=True), Ts - {Y})) | {frozenset(Xs)}
 
 
-def subPOMISs(G: CausalDiagram, Y, Ws: List, obs=None) -> Set[FrozenSet[str]]:
+def subPOMISs(G: CausalDiagram, Y, Ws: list, obs=None) -> set[frozenset[str]]:
     if obs is None:
         obs = set()
 
@@ -88,6 +88,6 @@ def subPOMISs(G: CausalDiagram, Y, Ws: List, obs=None) -> Set[FrozenSet[str]]:
     return {frozenset(_) for _ in out}
 
 
-def minimal_do(G: CausalDiagram, Y: str, Xs: AbstractSet[str]) -> FrozenSet[str]:
+def minimal_do(G: CausalDiagram, Y: str, Xs: AbstractSet[str]) -> frozenset[str]:
     """ Non-redundant subset of Xs that entail the same E[Y|do(Xs)] """
     return frozenset(Xs & G.do(Xs).An(Y))

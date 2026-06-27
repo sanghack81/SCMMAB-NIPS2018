@@ -5,13 +5,13 @@ from itertools import product
 import functools
 import networkx as nx
 import numpy as np
-from typing import Dict, Iterable, Optional, Set, Sequence, AbstractSet
-from typing import FrozenSet, Tuple
+from typing import AbstractSet
+from collections.abc import Iterable, Sequence
 
 from npsem.utils import fzset_union, sortup, sortup2, with_default
 
 
-def default_P_U(mu: Dict):
+def default_P_U(mu: dict):
     """ P(U) function given a dictionary of probabilities for each U_i being 1, P(U_i=1) """
 
     def P_U(d):
@@ -23,11 +23,11 @@ def default_P_U(mu: Dict):
     return P_U
 
 
-def dict_only(a_dict: dict, keys: AbstractSet) -> Dict:
+def dict_only(a_dict: dict, keys: AbstractSet) -> dict:
     return {k: a_dict[k] for k in keys if k in a_dict}
 
 
-def dict_except(a_dict: dict, keys: AbstractSet) -> Dict:
+def dict_except(a_dict: dict, keys: AbstractSet) -> dict:
     return {k: v for k, v in a_dict.items() if k not in keys}
 
 
@@ -54,12 +54,12 @@ def wrap(v_or_vs, wrap_with=frozenset):
 
 class CausalDiagram:
     def __init__(self,
-                 vs: Optional[Iterable[str]],
-                 directed_edges: Optional[Iterable[Tuple[str, str]]] = frozenset(),
-                 bidirected_edges: Optional[Iterable[Tuple[str, str, str]]] = frozenset(),
-                 copy: 'CausalDiagram' = None,
-                 with_do: Optional[Set[str]] = None,
-                 with_induced: Optional[Set[str]] = None):
+                 vs: Iterable[str] | None,
+                 directed_edges: Iterable[tuple[str, str]] | None = frozenset(),
+                 bidirected_edges: Iterable[tuple[str, str, str]] | None = frozenset(),
+                 copy: 'CausalDiagram | None' = None,
+                 with_do: set[str] | None = None,
+                 with_induced: set[str] | None = None):
         with_do = wrap(with_do)
         with_induced = wrap(with_induced)
         if copy is not None:
@@ -167,51 +167,51 @@ class CausalDiagram:
             return False
         return self >= other and self != other
 
-    def Pa(self, v_or_vs) -> FrozenSet:
+    def Pa(self, v_or_vs) -> frozenset:
         return self.pa(v_or_vs) | wrap(v_or_vs, frozenset)
 
-    def pa(self, v_or_vs) -> FrozenSet:
+    def pa(self, v_or_vs) -> frozenset:
         if isinstance(v_or_vs, str):
             return self._pa[v_or_vs]
         else:
             return fzset_union(self._pa[v] for v in v_or_vs)
 
-    def ch(self, v_or_vs) -> FrozenSet:
+    def ch(self, v_or_vs) -> frozenset:
         if isinstance(v_or_vs, str):
             return self._ch[v_or_vs]
         else:
             return fzset_union(self._ch[v] for v in v_or_vs)
 
-    def Ch(self, v_or_vs) -> FrozenSet:
+    def Ch(self, v_or_vs) -> frozenset:
         return self.ch(v_or_vs) | wrap(v_or_vs, frozenset)
 
-    def An(self, v_or_vs) -> FrozenSet:
+    def An(self, v_or_vs) -> frozenset:
         if isinstance(v_or_vs, str):
             return self.__an(v_or_vs) | {v_or_vs}
         return self.an(v_or_vs) | wrap(v_or_vs, frozenset)
 
-    def an(self, v_or_vs) -> FrozenSet:
+    def an(self, v_or_vs) -> frozenset:
         if isinstance(v_or_vs, str):
             return self.__an(v_or_vs)
         return fzset_union(self.__an(v) for v in wrap(v_or_vs))
 
-    def De(self, v_or_vs) -> FrozenSet:
+    def De(self, v_or_vs) -> frozenset:
         if isinstance(v_or_vs, str):
             return self.__de(v_or_vs) | {v_or_vs}
         return self.de(v_or_vs) | wrap(v_or_vs, frozenset)
 
-    def de(self, v_or_vs) -> FrozenSet:
+    def de(self, v_or_vs) -> frozenset:
         if isinstance(v_or_vs, str):
             return self.__de(v_or_vs)
         return fzset_union(self.__de(v) for v in wrap(v_or_vs))
 
-    def __an(self, v) -> FrozenSet:
+    def __an(self, v) -> frozenset:
         if v in self._an:
             return self._an[v]
         self._an[v] = fzset_union(self.__an(parent) for parent in self._pa[v]) | self._pa[v]
         return self._an[v]
 
-    def __de(self, v) -> FrozenSet:
+    def __de(self, v) -> frozenset:
         if v in self._de:
             return self._de[v]
         self._de[v] = fzset_union(self.__de(child) for child in self._ch[v]) | self._ch[v]
@@ -277,7 +277,7 @@ class CausalDiagram:
             return self[self.V - wrap(v_or_vs_or_edges)]
         return self.edges_removed(v_or_vs_or_edges)
 
-    def causal_order(self, backward=False) -> Tuple:
+    def causal_order(self, backward=False) -> tuple:
         gg = nx.DiGraph(self.edges)
         gg.add_nodes_from(self.V)
         top_to_bottom = list(nx.topological_sort(gg))
@@ -297,7 +297,7 @@ class CausalDiagram:
     def __ensure_confoundeds_cached(self):
         if self.__confoundeds is None:
             self.__confoundeds = dict()
-            for u, (x, y) in self.confounded_dict.items():
+            for _u, (x, y) in self.confounded_dict.items():
                 if x not in self.__confoundeds:
                     self.__confoundeds[x] = set()
                 if y not in self.__confoundeds:
@@ -333,16 +333,16 @@ class CausalDiagram:
             self.__cc_dict = self.__cc_dict2
 
     @property
-    def c_components(self) -> FrozenSet:
+    def c_components(self) -> frozenset:
         self.__ensure_cc_cached()
         return self.__cc
 
-    def c_component(self, v_or_vs) -> FrozenSet:
+    def c_component(self, v_or_vs) -> frozenset:
         assert isinstance(v_or_vs, str)
         self.__ensure_cc_cached()
         return fzset_union(self.__cc_dict[v] for v in wrap(v_or_vs))
 
-    def confounded_to_3tuples(self) -> FrozenSet[Tuple[str, str, str]]:
+    def confounded_to_3tuples(self) -> frozenset[tuple[str, str, str]]:
         return frozenset((*sorted([x, y]), u) for u, (x, y) in self.confounded_dict.items())
 
     def __eq__(self, other):
@@ -379,7 +379,7 @@ class CausalDiagram:
             for x, y in itertools.combinations(sortup(nxG.nodes), 2):
                 for spath in nx.all_simple_paths(nxG, x, y):
                     temppaths.append(spath)
-            selected = sorted(temppaths, key=lambda _spath: len(_spath), reverse=True)[0]
+            selected = sorted(temppaths, key=len, reverse=True)[0]
             bipaths.append(selected)
             for x, y in zip(selected, selected[1:]):
                 nxG.remove_edge(x, y)
@@ -435,7 +435,7 @@ class StructuralCausalModel:
 
         self.query00 = functools.lru_cache(1024)(self.query00)
 
-    def query(self, outcome: Tuple, condition: dict = None, intervention: dict = None, verbose=False) -> defaultdict:
+    def query(self, outcome: tuple, condition: dict | None = None, intervention: dict | None = None, verbose=False) -> defaultdict:
         if condition is None:
             condition = dict()
         if intervention is None:
@@ -444,7 +444,7 @@ class StructuralCausalModel:
         new_intervention = tuple(sorted([(x, y) for x, y in intervention.items()]))
         return self.query00(outcome, new_condition, new_intervention, verbose)
 
-    def query00(self, outcome: Tuple, condition: Tuple, intervention: Tuple, verbose=False) -> defaultdict:
+    def query00(self, outcome: tuple, condition: tuple, intervention: tuple, verbose=False) -> defaultdict:
         condition = dict(condition)
         intervention = dict(intervention)
 
@@ -523,7 +523,7 @@ def cd2qcd(G: CausalDiagram) -> str:
         for x, y in itertools.combinations(sortup(nxG.nodes), 2):
             for spath in nx.all_simple_paths(nxG, x, y):
                 temppaths.append(spath)
-        selected = sorted(temppaths, key=lambda _spath: len(_spath), reverse=True)[0]
+        selected = sorted(temppaths, key=len, reverse=True)[0]
         bipaths.append(selected)
         for x, y in zip(selected, selected[1:]):
             nxG.remove_edge(x, y)
