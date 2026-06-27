@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='npsem',
-    version="0.1.0",
+    version="0.2.0",
     packages=find_packages(),
     author='Sanghack Lee',
     author_email='sanghack.lee@gmail.com',
