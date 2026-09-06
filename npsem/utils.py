@@ -74,8 +74,10 @@ def seeded(seed=None):
     if seed is not None:
         st0 = np.random.get_state()
         np.random.seed(seed)
-        yield
-        np.random.set_state(st0)
+        try:
+            yield
+        finally:
+            np.random.set_state(st0)
     else:
         yield
 

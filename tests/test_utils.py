@@ -68,6 +68,17 @@ def test_seeded_restores_global_state():
     assert np.array_equal(np.random.rand(3), expected)
 
 
+def test_seeded_restores_global_state_on_exception():
+    np.random.seed(0)
+    expected = np.random.rand(3)
+    np.random.seed(0)
+    with pytest.raises(RuntimeError, match="interrupted experiment"):
+        with seeded(999):
+            np.random.rand(10)
+            raise RuntimeError("interrupted experiment")
+    assert np.array_equal(np.random.rand(3), expected)
+
+
 def test_rand_argmax_basic_and_ties():
     assert rand_argmax(np.array([0.1, 0.9, 0.3])) == 1
     picks = {int(rand_argmax(np.array([0.5, 0.5, 0.1]))) for _ in range(50)}
