@@ -24,3 +24,13 @@ Install the test dependency and run the unit-test suite:
 
 The suite cross-checks the POMIS algorithm against a brute-force oracle, verifies the
 paper's optimality claim, and guards the bandit algorithms; it runs in a few seconds.
+
+## Lean formalization
+
+The directory [`lean/`](lean/) contains machine-checked proofs, in Lean 4 with Mathlib, of the
+paper's graphical results: the characterization of POMISs (Thm. 6), the soundness and completeness
+of the `POMISs` algorithm (Thm. 9), the supporting propositions, and the examples of Figs. 1–2.
+Statement numbers follow the
+[unofficial AI-corrected version](https://www.sanghacklee.me/ai-corrected/SCB2018_AI_corrected_2026-11-23.pdf)
+of the paper. [`lean/README.md`](lean/README.md) gives the statement-by-statement correspondence
+and build instructions.

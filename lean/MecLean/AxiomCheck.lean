@@ -1,0 +1,59 @@
+import MecLean
+
+/-! Axiom dependencies of every result listed in `README.md`.  Each should be
+`[propext, Classical.choice, Quot.sound]`. -/
+
+#print axioms Mec.ScbMec.mis_diag_iff
+#print axioms Mec.ScbMec.dmis_of_mis_diag
+#print axioms Mec.ScbMec.pomis_diag
+#print axioms Mec.Scb2018.mu_le_best_diagBorder
+#print axioms Mec.Scb2018.thm6_onlyif
+#print axioms Mec.Scb2018.thm6_if
+#print axioms Mec.Scb2018.thm6
+#print axioms Mec.Scb2018.prop4
+#print axioms Mec.Scb2018.prop5
+#print axioms Mec.Scb2018.pa_pomis
+#print axioms Mec.Scb2018.prop2
+#print axioms Mec.Scb2018.cor3
+#print axioms Mec.Scb2018.subsumption
+#print axioms Mec.Scb2018.cor11
+#print axioms Mec.Scb2018.Alg.diagMUCT_cut_iff
+#print axioms Mec.Scb2018.Alg.eq_muct
+#print axioms Mec.Scb2018.prop7
+#print axioms Mec.Scb2018.prop7_cut
+#print axioms Mec.Scb2018.prop8
+#print axioms Mec.Scb2018.prop8_cut
+#print axioms Mec.Scb2018.prop8_general
+#print axioms Mec.Scb2018.prop12
+#print axioms Mec.Scb2018.prop12_cut
+#print axioms Mec.Scb2018.thm9_graphical
+#print axioms Mec.Scb2018.thm9
+#print axioms Mec.Scb2018.thm9_of_revTopo_compress
+#print axioms Mec.Scb2018.mem_MISs_iff
+#print axioms Mec.Scb2018.mem_MISs_iff_mis
+#print axioms Mec.Scb2018.Fig2.muct_G
+#print axioms Mec.Scb2018.Fig2.muct_GX
+#print axioms Mec.Scb2018.Fig2.muct_GZ
+#print axioms Mec.Scb2018.Fig2.muct_GW
+#print axioms Mec.Scb2018.Fig2.output
+#print axioms Mec.Scb2018.Fig2.no_recursion
+#print axioms Mec.Scb2018.Fig2.recursion_alt
+#print axioms Mec.Scb2018.Fig2.pomis_iff
+#print axioms Mec.Scb2018.Fig2.miss_G
+#print axioms Mec.Scb2018.Fig1.mis_sets
+#print axioms Mec.Scb2018.Fig1.pomis_sets
+#print axioms Mec.Scb2018.Fig1.B1_best_empty
+#print axioms Mec.Scb2018.Fig1.B1_best_X
+#print axioms Mec.Scb2018.Fig1.B1_best_Z
+#print axioms Mec.Scb2018.Fig1.B1_compare
+#print axioms Mec.Scb2018.Fig1.B1_half
+#print axioms Mec.Scb2018.Fig1.C1_best_X
+#print axioms Mec.Scb2018.Fig1.C1_best_Z
+#print axioms Mec.Scb2018.Fig1.C1_compare
+#print axioms Mec.Scb2018.Fig1.B2_best_empty
+#print axioms Mec.Scb2018.Fig1.B2_best_X
+#print axioms Mec.Scb2018.Fig1.B2_best_Z
+#print axioms Mec.Scb2018.Fig1.B2_compare
+#print axioms Mec.Scb2018.Fig1.C2_best_X
+#print axioms Mec.Scb2018.Fig1.C2_best_Z
+#print axioms Mec.Scb2018.Fig1.C2_compare

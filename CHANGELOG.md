@@ -4,6 +4,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `lean/`: a Lean 4 formalization of the paper's graphical results (Props. 1, 2, 4, 5, 7, 8, 10,
+  12, Cors. 3, 11, Thms. 6, 9, Algorithm 4 and the examples of Figs. 1–2). The Python package is
+  unchanged.
+
 ## [0.2.0] - 2026-06-27
 
 Modernization of the original NeurIPS-2018 release so it runs cleanly on current
